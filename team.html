@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garage Kohler AG — Unser Team</title>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'k-bg':      '#0d0d10',
+            'k-surface': '#14141a',
+            'k-elevated':'#1c1c24',
+            'k-border':  '#2a2a35',
+            'k-red':     '#c0392b',
+            'k-redhot':  '#ff5a3d',
+            'k-amber':   '#f0a500',
+            'k-text':    '#d4d4d4',
+            'k-muted':   '#8a8a9a',
+          },
+          fontFamily: {
+            'condensed': ['Barlow Condensed', 'sans-serif'],
+            'body':      ['Inter', 'sans-serif'],
+            'mono':      ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body { background-color: #0d0d10; color: #d4d4d4; font-family: 'Inter', sans-serif; }
+    .grain { position: relative; overflow: hidden; }
+    .grain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .grain > * { position: relative; z-index: 2; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d10; }
+    ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c0392b; }
+    #nav-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    #nav-drawer.open { max-height: 24rem; }
+
+    /* 3D tilt card */
+    .team-card-wrapper {
+      perspective: 1000px;
+    }
+    .team-card {
+      transform-style: preserve-3d;
+      transition: transform 0.15s cubic-bezier(0.22, 0.68, 0, 1.2), box-shadow 0.15s ease;
+      will-change: transform;
+      position: relative;
+    }
+    .team-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .team-card:hover::after {
+      opacity: 1;
+    }
+    .team-card:hover {
+      box-shadow: 0 24px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(192,57,43,0.3), 0 0 32px rgba(192,57,43,0.12);
+    }
+  </style>
+</head>
+<body class="bg-k-bg text-k-text font-body antialiased">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-k-elevated/95 backdrop-blur-sm border-b border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg leading-none group-hover:bg-k-redhot transition-colors duration-200">K</div>
+          <div class="hidden sm:block">
+            <div class="font-condensed font-bold text-white text-lg tracking-tight leading-none">GARAGE KOHLER</div>
+            <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" data-nav="index.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Home</a>
+          <a href="services.html" data-nav="services.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Dienstleistungen</a>
+          <a href="fahrzeuge.html" data-nav="fahrzeuge.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Fahrzeuge</a>
+          <a href="team.html" data-nav="team.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Team</a>
+          <a href="oeffnungszeiten.html" data-nav="oeffnungszeiten.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Öffnungszeiten</a>
+          <a href="tel:+41344604444" class="ml-3 px-4 py-2 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors duration-150 flex items-center gap-2">
+            <i data-lucide="phone" class="w-4 h-4"></i><span class="font-mono">034 460 44 44</span>
+          </a>
+        </div>
+        <button id="hamburger" class="md:hidden p-2 text-k-muted hover:text-white transition-colors" aria-label="Menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6" id="icon-menu"></i>
+          <i data-lucide="x" class="w-6 h-6 hidden" id="icon-close"></i>
+        </button>
+      </div>
+    </div>
+    <div id="nav-drawer" class="md:hidden border-t border-k-border bg-k-elevated">
+      <div class="px-4 py-3 flex flex-col gap-1">
+        <a href="index.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Home</a>
+        <a href="services.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Dienstleistungen</a>
+        <a href="fahrzeuge.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Fahrzeuge</a>
+        <a href="team.html" class="px-3 py-2.5 text-sm font-medium text-white hover:text-k-red rounded transition-colors">Team</a>
+        <a href="oeffnungszeiten.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Öffnungszeiten</a>
+        <a href="tel:+41344604444" class="mt-2 px-3 py-2.5 bg-k-red text-white text-sm font-medium rounded flex items-center gap-2">
+          <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-16">
+
+    <!-- PAGE HERO -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-k-border"
+             style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 70%), linear-gradient(180deg, #0d0d10 0%, #0a0a0e 100%);">
+      <div class="max-w-7xl mx-auto">
+        <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Garage Kohler AG</div>
+        <h1 class="font-condensed font-extrabold text-white text-5xl sm:text-6xl mb-4">Unser Team</h1>
+        <p class="text-k-muted max-w-xl">Sechs erfahrene Fachkräfte an zwei Standorten — für Ihre Mobilität und Sicherheit.</p>
+        <div class="flex gap-4 mt-6">
+          <div class="flex items-center gap-2 px-4 py-2 rounded bg-k-surface border border-k-border text-sm">
+            <i data-lucide="users" class="w-4 h-4 text-k-red"></i>
+            <span class="font-mono text-k-muted">6 Mitarbeitende</span>
+          </div>
+          <div class="flex items-center gap-2 px-4 py-2 rounded bg-k-surface border border-k-border text-sm">
+            <i data-lucide="map-pin" class="w-4 h-4 text-k-red"></i>
+            <span class="font-mono text-k-muted">2 Standorte</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM GRID -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="team-grid">
+
+          <!-- Jürg Kohler -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/11062b_777f119aa50d4f479b51d6446255273a~mv2.jpg/v1/fill/w_386,h_500,al_c,q_80,usm_0.66_1.00_0.01/11062b_777f119aa50d4f479b51d6446255273a~mv2.jpg"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=JK'"
+                  alt="Jürg Kohler"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+                <div class="absolute top-3 right-3">
+                  <span class="font-mono text-[10px] bg-k-red text-white px-2 py-1 rounded">Inhaber</span>
+                </div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Jürg Kohler</h3>
+                <span class="inline-block font-mono text-xs text-k-red bg-k-red/10 px-2.5 py-1 rounded mb-3">Inhaber &amp; Verkauf</span>
+                <p class="text-k-muted text-sm leading-relaxed">Gründer und Gesicht der Garage Kohler AG. Mit jahrelanger Erfahrung und Leidenschaft für Automobile.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thomas Schenk -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/2f5fa672be0d4df79808312c8b5caf1f.jpg"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=TS'"
+                  alt="Thomas Schenk"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Thomas Schenk</h3>
+                <span class="inline-block font-mono text-xs text-k-red bg-k-red/10 px-2.5 py-1 rounded mb-3">Automechaniker</span>
+                <p class="text-k-muted text-sm leading-relaxed">Fachkundiger Techniker mit Erfahrung in Wartung und Reparatur aller Fahrzeugmarken.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brigitte Gerber -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/11062b_18dbfefff5454595a4b2b880c045b326~mv2.jpg"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=BG'"
+                  alt="Brigitte Gerber"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Brigitte Gerber</h3>
+                <span class="inline-block font-mono text-xs text-k-amber bg-k-amber/10 px-2.5 py-1 rounded mb-3">Administration</span>
+                <p class="text-k-muted text-sm leading-relaxed">Verantwortlich für Administration und Buchhaltung — das organisatorische Herzstück der Garage.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simon Oppliger -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/0e51e8_fc03e1b3115245cd938373ab58b471c4~mv2.png"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=SO'"
+                  alt="Simon Oppliger"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Simon Oppliger</h3>
+                <span class="inline-block font-mono text-xs text-k-red bg-k-red/10 px-2.5 py-1 rounded mb-3">Automechaniker</span>
+                <p class="text-k-muted text-sm leading-relaxed">Präziser und zuverlässiger Techniker — für Diagnose, Reparatur und Fahrzeuginspektionen.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Roger Röthlisberger -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/31f3c48915de4b518af1b4ca2fcc782e.png"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=RR'"
+                  alt="Roger Röthlisberger"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Roger Röthlisberger</h3>
+                <span class="inline-block font-mono text-xs text-k-red bg-k-red/10 px-2.5 py-1 rounded mb-3">Automechaniker</span>
+                <p class="text-k-muted text-sm leading-relaxed">Erfahrener Mechaniker mit breitem Fachwissen in Fahrzeugwartung und -reparatur.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Matthias Grossenbacher -->
+          <div class="team-card-wrapper">
+            <div class="team-card rounded-xl overflow-hidden bg-k-surface border border-k-border">
+              <div class="relative h-72 overflow-hidden bg-k-elevated">
+                <img
+                  src="https://static.wixstatic.com/media/11062b_57c0d9c4f5794fb1915b7f946d944eb6~mv2.jpg"
+                  onerror="this.src='https://placehold.co/386x500/1c1c24/8a8a9a?text=MG'"
+                  alt="Matthias Grossenbacher"
+                  class="w-full h-full object-cover object-top" />
+                <div class="absolute inset-0 bg-gradient-to-t from-k-surface/90 via-transparent to-transparent"></div>
+                <div class="absolute top-3 right-3">
+                  <span class="font-mono text-[10px] bg-k-border text-k-muted px-2 py-1 rounded">Lernender</span>
+                </div>
+              </div>
+              <div class="p-5">
+                <h3 class="font-condensed font-bold text-white text-2xl leading-tight mb-1">Matthias Grossenbacher</h3>
+                <span class="inline-block font-mono text-xs text-k-muted bg-k-border px-2.5 py-1 rounded mb-3">Lernender</span>
+                <p class="text-k-muted text-sm leading-relaxed">Motivierter Nachwuchs-Mechaniker in Ausbildung — die Zukunft der Garage Kohler AG.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- JOIN CTA -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-k-surface border-t border-k-border">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Karriere</div>
+        <h2 class="font-condensed font-bold text-white text-4xl sm:text-5xl mb-4">Teil des Teams werden</h2>
+        <p class="text-k-muted mb-8">Wir suchen leidenschaftliche Fachkräfte, die gemeinsam mit uns Mobilität im Emmental sichern.</p>
+        <a href="mailto:info@garagekohlerag.ch?subject=Bewerbung"
+           class="inline-flex items-center gap-2 px-8 py-3.5 bg-k-red hover:bg-k-redhot text-white font-medium rounded transition-colors duration-200 shadow-[0_0_20px_rgba(192,57,43,0.3)]">
+          <i data-lucide="send" class="w-5 h-5"></i>
+          Spontanbewerbung senden
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="grain bg-k-elevated border-t border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg">K</div>
+            <div>
+              <div class="font-condensed font-bold text-white text-lg leading-none">GARAGE KOHLER AG</div>
+              <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+            </div>
+          </div>
+          <p class="text-k-muted text-sm leading-relaxed">Ihr zuverlässiger Garage-Partner im Emmental. Qualität, Ehrlichkeit und persönlicher Service.</p>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Navigation</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-sm text-k-muted hover:text-white transition-colors">Home</a></li>
+            <li><a href="services.html" class="text-sm text-k-muted hover:text-white transition-colors">Dienstleistungen</a></li>
+            <li><a href="fahrzeuge.html" class="text-sm text-k-muted hover:text-white transition-colors">Fahrzeuge</a></li>
+            <li><a href="team.html" class="text-sm text-k-muted hover:text-white transition-colors">Team</a></li>
+            <li><a href="oeffnungszeiten.html" class="text-sm text-k-muted hover:text-white transition-colors">Öffnungszeiten</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Kontakt</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Alpenstrasse 30A, 3432 Lützelflüh</span></li>
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Huttwilstrasse 33, 3463 Häusernmoos</span></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="phone" class="w-4 h-4 text-k-red"></i><a href="tel:+41344604444" class="font-mono text-k-muted hover:text-k-amber transition-colors">034 460 44 44</a></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="mail" class="w-4 h-4 text-k-red"></i><a href="mailto:info@garagekohlerag.ch" class="font-mono text-k-muted hover:text-k-amber transition-colors">info@garagekohlerag.ch</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-k-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-mono text-xs text-k-border">© 2024 Garage Kohler AG · Lützelflüh &amp; Häusernmoos</p>
+        <p class="font-mono text-xs text-k-border">AGVS | UPSA · le Garage Partner</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Mobile nav
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconClose = document.getElementById('icon-close');
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+      iconMenu.classList.toggle('hidden', isOpen);
+      iconClose.classList.toggle('hidden', !isOpen);
+    });
+
+    // Active nav
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      if (el.dataset.nav === page) { el.classList.add('text-white'); el.classList.remove('text-k-muted'); }
+    });
+
+    // 3D tilt on team cards
+    document.querySelectorAll('.team-card').forEach(card => {
+      const wrapper = card.parentElement;
+
+      wrapper.addEventListener('mousemove', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width  - 0.5;
+        const y = (e.clientY - rect.top)  / rect.height - 0.5;
+        const rotY =  x * 14;
+        const rotX = -y * 14;
+        card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.04) translateZ(8px)`;
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0)';
+      });
+    });
+  </script>
+</body>
+</html>

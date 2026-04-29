@@ -1,0 +1,9 @@
+{
+  "name": "garage-kohler-website",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "puppeteer": "^24.42.0"
+  }
+}

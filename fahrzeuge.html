@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garage Kohler AG — Fahrzeuge & Mietfahrzeuge</title>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'k-bg':      '#0d0d10',
+            'k-surface': '#14141a',
+            'k-elevated':'#1c1c24',
+            'k-border':  '#2a2a35',
+            'k-red':     '#c0392b',
+            'k-redhot':  '#ff5a3d',
+            'k-amber':   '#f0a500',
+            'k-text':    '#d4d4d4',
+            'k-muted':   '#8a8a9a',
+          },
+          fontFamily: {
+            'condensed': ['Barlow Condensed', 'sans-serif'],
+            'body':      ['Inter', 'sans-serif'],
+            'mono':      ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body { background-color: #0d0d10; color: #d4d4d4; font-family: 'Inter', sans-serif; }
+    .grain { position: relative; overflow: hidden; }
+    .grain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .grain > * { position: relative; z-index: 2; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d10; }
+    ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c0392b; }
+    #nav-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    #nav-drawer.open { max-height: 24rem; }
+
+    .car-card {
+      transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .car-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(192,57,43,0.18), 0 2px 8px rgba(0,0,0,0.5);
+      border-color: #c0392b;
+    }
+
+    /* Rental card hover overlay */
+    .rental-card { position: relative; cursor: pointer; overflow: hidden; }
+    .rental-card .rental-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(192,57,43,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .rental-card:hover .rental-overlay { opacity: 1; }
+    .rental-card {
+      transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .rental-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(192,57,43,0.25), 0 2px 8px rgba(0,0,0,0.5);
+      border-color: #c0392b;
+    }
+
+    /* Modal */
+    #modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    #modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    #modal-panel {
+      background: #14141a;
+      border: 1px solid #2a2a35;
+      border-radius: 1rem;
+      max-width: 52rem;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(.22,.68,0,1.2);
+    }
+    #modal.open #modal-panel {
+      transform: scale(1);
+    }
+
+    /* Slideshow */
+    .slide-img {
+      transition: opacity 0.3s ease;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #2a2a35;
+      transition: background 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    .dot.active {
+      background: #c0392b;
+      transform: scale(1.3);
+    }
+  </style>
+</head>
+<body class="bg-k-bg text-k-text font-body antialiased">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-k-elevated/95 backdrop-blur-sm border-b border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg leading-none group-hover:bg-k-redhot transition-colors duration-200">K</div>
+          <div class="hidden sm:block">
+            <div class="font-condensed font-bold text-white text-lg tracking-tight leading-none">GARAGE KOHLER</div>
+            <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" data-nav="index.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Home</a>
+          <a href="services.html" data-nav="services.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Dienstleistungen</a>
+          <a href="fahrzeuge.html" data-nav="fahrzeuge.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Fahrzeuge</a>
+          <a href="team.html" data-nav="team.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Team</a>
+          <a href="oeffnungszeiten.html" data-nav="oeffnungszeiten.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Öffnungszeiten</a>
+          <a href="tel:+41344604444" class="ml-3 px-4 py-2 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors duration-150 flex items-center gap-2">
+            <i data-lucide="phone" class="w-4 h-4"></i><span class="font-mono">034 460 44 44</span>
+          </a>
+        </div>
+        <button id="hamburger" class="md:hidden p-2 text-k-muted hover:text-white transition-colors" aria-label="Menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6" id="icon-menu"></i>
+          <i data-lucide="x" class="w-6 h-6 hidden" id="icon-close"></i>
+        </button>
+      </div>
+    </div>
+    <div id="nav-drawer" class="md:hidden border-t border-k-border bg-k-elevated">
+      <div class="px-4 py-3 flex flex-col gap-1">
+        <a href="index.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Home</a>
+        <a href="services.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Dienstleistungen</a>
+        <a href="fahrzeuge.html" class="px-3 py-2.5 text-sm font-medium text-white hover:text-k-red rounded transition-colors">Fahrzeuge</a>
+        <a href="team.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Team</a>
+        <a href="oeffnungszeiten.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Öffnungszeiten</a>
+        <a href="tel:+41344604444" class="mt-2 px-3 py-2.5 bg-k-red text-white text-sm font-medium rounded flex items-center gap-2">
+          <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-16">
+
+    <!-- PAGE HERO -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-k-border"
+             style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 70%), linear-gradient(180deg, #0d0d10 0%, #0a0a0e 100%);">
+      <div class="max-w-7xl mx-auto">
+        <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Garage Kohler AG</div>
+        <h1 class="font-condensed font-extrabold text-white text-5xl sm:text-6xl mb-4">Fahrzeuge</h1>
+        <p class="text-k-muted max-w-xl mb-8">Geprüfte Occasionen und gepflegte Mietfahrzeuge — für jeden Bedarf das richtige Fahrzeug.</p>
+
+        <!-- Tab navigation -->
+        <div class="flex gap-2">
+          <a href="#occasionen" class="px-5 py-2.5 bg-k-red text-white text-sm font-medium rounded font-mono">Occasionen</a>
+          <a href="#mietfahrzeuge" class="px-5 py-2.5 bg-k-surface border border-k-border text-k-muted hover:text-white text-sm font-medium rounded font-mono transition-colors">Mietfahrzeuge</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== OCCASIONEN ===== -->
+    <section id="occasionen" class="py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="mb-10">
+          <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Aktuelle Angebote</div>
+          <h2 class="font-condensed font-bold text-white text-4xl sm:text-5xl">Occasionen</h2>
+          <p class="text-k-muted mt-2 text-sm">Alle Fahrzeuge geprüft · Details und weitere Fotos auf <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener" class="text-k-red hover:text-k-redhot underline">Autolina.ch</a></p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Subaru Impreza -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=Subaru+Impreza" alt="Subaru Impreza 1.6i Swiss Two 2013" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">Subaru Impreza 1.6i</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2013</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Swiss Two · Benzin · Schaltung · 114 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 186'200 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 6'900</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subaru XV -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=Subaru+XV" alt="Subaru XV 2.0i 2012" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">Subaru XV 2.0i</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2012</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Swiss Two · Benzin · Automat · 150 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 179'800 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 8'600</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skoda Roomster -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=Skoda+Roomster" alt="Skoda Roomster 1.2 TSI 2011" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">Skoda Roomster 1.2 TSI</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2011</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Family · Benzin · Schaltung · 86 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 182'100 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 5'500</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- VW Polo 2009 -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=VW+Polo" alt="VW Polo 1.4 Trendline 2009" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">VW Polo 1.4 DSG</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2009</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Trendline · Benzin · Automat · 85 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 131'300 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 7'900</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- VW Polo 2011 -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=VW+Polo+TSI" alt="VW Polo 1.2 TSI 105 2011" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">VW Polo 1.2 TSI 105</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2011</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Trendline · Benzin · Schaltung · 105 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 160'700 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 7'300</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Suzuki Celerio -->
+          <div class="car-card rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="h-48 overflow-hidden bg-k-elevated">
+              <img src="https://placehold.co/400x240/1c1c24/c0392b?text=Suzuki+Celerio" alt="Suzuki Celerio 1.0 2015" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-condensed font-bold text-white text-xl leading-tight">Suzuki Celerio 1.0</h3>
+                <span class="font-mono text-xs text-k-muted bg-k-border px-2 py-0.5 rounded-full flex-shrink-0 ml-2">2015</span>
+              </div>
+              <p class="font-mono text-xs text-k-muted mb-3">Compact+ · Benzin · Automat · 68 PS</p>
+              <div class="flex items-center gap-4 text-xs font-mono text-k-muted mb-5">
+                <span class="flex items-center gap-1"><i data-lucide="gauge" class="w-3 h-3"></i> 142'400 km</span>
+                <span class="flex items-center gap-1 text-k-red"><i data-lucide="tag" class="w-3 h-3"></i> Occasion</span>
+              </div>
+              <div class="flex items-end justify-between">
+                <span class="font-condensed font-bold text-k-amber text-3xl font-mono">CHF 6'800</span>
+                <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+                   class="px-4 py-2 border border-k-border hover:border-k-red rounded text-xs font-mono text-k-muted hover:text-white transition-colors">
+                  Details auf Autolina →
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-10 p-5 rounded-lg bg-k-surface border border-k-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <i data-lucide="info" class="w-5 h-5 text-k-red flex-shrink-0"></i>
+            <p class="text-sm text-k-muted">Weitere Fotos, detaillierte Beschreibungen und Finanzierungsoptionen auf Autolina.ch</p>
+          </div>
+          <a href="https://www.autolina.ch/infopage/1035/garage-juerg-kohler-ag" target="_blank" rel="noopener"
+             class="flex-shrink-0 px-5 py-2.5 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors font-mono">
+            Alle auf Autolina.ch →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MIETFAHRZEUGE ===== -->
+    <section id="mietfahrzeuge" class="py-20 px-4 sm:px-6 lg:px-8 bg-k-surface border-t border-k-border">
+      <div class="max-w-7xl mx-auto">
+        <div class="mb-10">
+          <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Zur Miete</div>
+          <h2 class="font-condensed font-bold text-white text-4xl sm:text-5xl">Mietfahrzeuge</h2>
+          <p class="text-k-muted mt-2 text-sm">Klicken Sie auf ein Fahrzeug für Details, Bilder und Preise.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <!-- Rimor -->
+          <div class="rental-card rounded-xl bg-k-elevated border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]"
+               onclick="openModal(0)" role="button" tabindex="0" aria-label="Fiat Ducato Rimor Details öffnen"
+               onkeydown="if(event.key==='Enter'||event.key===' ')openModal(0)">
+            <div class="relative h-56">
+              <img
+                src="https://static.wixstatic.com/media/0e51e8_a347bd51fc4a4cbf86849bb6f2d194aa~mv2.jpg"
+                onerror="this.src='https://placehold.co/700x320/1c1c24/c0392b?text=Fiat+Ducato+Rimor'"
+                alt="Fiat Ducato Rimor"
+                class="w-full h-full object-cover" />
+              <div class="rental-overlay">
+                <div class="text-center text-white">
+                  <i data-lucide="images" class="w-8 h-8 mx-auto mb-2"></i>
+                  <p class="font-condensed font-bold text-xl">Details &amp; Bilder</p>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3">
+                <span class="font-mono text-xs bg-k-red text-white px-3 py-1.5 rounded">Wohnmobil</span>
+              </div>
+            </div>
+            <div class="p-5 flex items-end justify-between">
+              <div>
+                <h3 class="font-condensed font-bold text-white text-2xl mb-1">Fiat Ducato Rimor</h3>
+                <div class="flex gap-3 text-xs font-mono text-k-muted">
+                  <span class="flex items-center gap-1"><i data-lucide="users" class="w-3 h-3"></i> 6 Sitze</span>
+                  <span class="flex items-center gap-1"><i data-lucide="moon" class="w-3 h-3"></i> 4–6 Schlafplätze</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-condensed font-bold text-k-amber text-2xl font-mono">CHF 1'050</div>
+                <div class="font-mono text-xs text-k-muted">/ Woche</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Elnagh -->
+          <div class="rental-card rounded-xl bg-k-elevated border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]"
+               onclick="openModal(1)" role="button" tabindex="0" aria-label="Fiat Ducato Elnagh Details öffnen"
+               onkeydown="if(event.key==='Enter'||event.key===' ')openModal(1)">
+            <div class="relative h-56">
+              <img
+                src="https://static.wixstatic.com/media/0e51e8_1a781e11cbc649a781ffd48732040759~mv2.jpg"
+                onerror="this.src='https://placehold.co/700x320/1c1c24/c0392b?text=Fiat+Ducato+Elnagh'"
+                alt="Fiat Ducato Elnagh"
+                class="w-full h-full object-cover" />
+              <div class="rental-overlay">
+                <div class="text-center text-white">
+                  <i data-lucide="images" class="w-8 h-8 mx-auto mb-2"></i>
+                  <p class="font-condensed font-bold text-xl">Details &amp; Bilder</p>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3">
+                <span class="font-mono text-xs bg-k-red text-white px-3 py-1.5 rounded">Wohnmobil</span>
+              </div>
+            </div>
+            <div class="p-5 flex items-end justify-between">
+              <div>
+                <h3 class="font-condensed font-bold text-white text-2xl mb-1">Fiat Ducato Elnagh</h3>
+                <div class="flex gap-3 text-xs font-mono text-k-muted">
+                  <span class="flex items-center gap-1"><i data-lucide="users" class="w-3 h-3"></i> 4 Sitze</span>
+                  <span class="flex items-center gap-1"><i data-lucide="moon" class="w-3 h-3"></i> 4–6 Schlafplätze</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-condensed font-bold text-k-amber text-2xl font-mono">CHF 1'050</div>
+                <div class="font-mono text-xs text-k-muted">/ Woche</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Adria Sun Liring -->
+          <div class="rental-card rounded-xl bg-k-elevated border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]"
+               onclick="openModal(2)" role="button" tabindex="0" aria-label="Fiat Ducato Adria Details öffnen"
+               onkeydown="if(event.key==='Enter'||event.key===' ')openModal(2)">
+            <div class="relative h-56">
+              <img
+                src="https://static.wixstatic.com/media/0e51e8_cf33e5c86e5745df83e412a91120446d~mv2.jpeg"
+                onerror="this.src='https://placehold.co/700x320/1c1c24/c0392b?text=Adria+Sun+Liring'"
+                alt="Fiat Ducato Adria Sun Liring"
+                class="w-full h-full object-cover" />
+              <div class="rental-overlay">
+                <div class="text-center text-white">
+                  <i data-lucide="images" class="w-8 h-8 mx-auto mb-2"></i>
+                  <p class="font-condensed font-bold text-xl">Details &amp; Bilder</p>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3">
+                <span class="font-mono text-xs bg-k-red text-white px-3 py-1.5 rounded">Wohnmobil</span>
+              </div>
+            </div>
+            <div class="p-5 flex items-end justify-between">
+              <div>
+                <h3 class="font-condensed font-bold text-white text-2xl mb-1">Adria Sun Liring</h3>
+                <div class="flex gap-3 text-xs font-mono text-k-muted">
+                  <span class="flex items-center gap-1"><i data-lucide="users" class="w-3 h-3"></i> 3 Sitze</span>
+                  <span class="flex items-center gap-1"><i data-lucide="moon" class="w-3 h-3"></i> 2–3 Schlafplätze</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-condensed font-bold text-k-amber text-2xl font-mono">CHF 950</div>
+                <div class="font-mono text-xs text-k-muted">/ Woche</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transporter -->
+          <div class="rental-card rounded-xl bg-k-elevated border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]"
+               onclick="openModal(3)" role="button" tabindex="0" aria-label="Fiat Ducato Transporter Details öffnen"
+               onkeydown="if(event.key==='Enter'||event.key===' ')openModal(3)">
+            <div class="relative h-56">
+              <img
+                src="https://static.wixstatic.com/media/0e51e8_fccaf0da306f454b857a78f3551477ee~mv2.jpg"
+                onerror="this.src='https://placehold.co/700x320/1c1c24/8a8a9a?text=Fiat+Ducato+Transporter'"
+                alt="Fiat Ducato Transporter"
+                class="w-full h-full object-cover" />
+              <div class="rental-overlay">
+                <div class="text-center text-white">
+                  <i data-lucide="images" class="w-8 h-8 mx-auto mb-2"></i>
+                  <p class="font-condensed font-bold text-xl">Details &amp; Bilder</p>
+                </div>
+              </div>
+              <div class="absolute bottom-3 left-3">
+                <span class="font-mono text-xs bg-k-muted text-k-bg px-3 py-1.5 rounded">Transporter</span>
+              </div>
+            </div>
+            <div class="p-5 flex items-end justify-between">
+              <div>
+                <h3 class="font-condensed font-bold text-white text-2xl mb-1">Fiat Ducato 17Q 2.3</h3>
+                <div class="flex gap-3 text-xs font-mono text-k-muted">
+                  <span class="flex items-center gap-1"><i data-lucide="package" class="w-3 h-3"></i> Kastenfahrzeug</span>
+                  <span class="flex items-center gap-1"><i data-lucide="truck" class="w-3 h-3"></i> Transporter</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-condensed font-bold text-k-amber text-2xl font-mono">CHF 110</div>
+                <div class="font-mono text-xs text-k-muted">/ Tag</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Reservation note -->
+        <div class="mt-10 p-5 rounded-lg bg-k-red/10 border border-k-red/30 flex items-start gap-4">
+          <i data-lucide="info" class="w-5 h-5 text-k-red flex-shrink-0 mt-0.5"></i>
+          <div>
+            <p class="text-sm text-k-text font-medium mb-1">Reservation auf Anfrage</p>
+            <p class="text-sm text-k-muted">Alle Mietfahrzeuge werden auf Voranmeldung reserviert. Kontaktieren Sie uns für Verfügbarkeiten und individuelle Konditionen.</p>
+            <a href="mailto:info@garagekohlerag.ch?subject=Mietfahrzeug%20Anfrage" class="inline-flex items-center gap-1.5 mt-3 text-k-red text-sm font-medium hover:text-k-redhot transition-colors">
+              <i data-lucide="mail" class="w-4 h-4"></i> Anfrage senden
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== MODAL ===== -->
+  <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal-panel">
+
+      <!-- Close button -->
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-k-border hover:bg-k-red flex items-center justify-center transition-colors">
+        <i data-lucide="x" class="w-5 h-5 text-white"></i>
+      </button>
+
+      <!-- Slideshow -->
+      <div class="relative bg-k-elevated rounded-t-xl overflow-hidden" style="height: 380px;">
+        <img id="modal-img" src="" alt="" class="slide-img w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-k-surface/70 to-transparent pointer-events-none"></div>
+
+        <!-- Prev/Next -->
+        <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-k-bg/70 hover:bg-k-red flex items-center justify-center transition-colors">
+          <i data-lucide="chevron-left" class="w-5 h-5 text-white"></i>
+        </button>
+        <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-k-bg/70 hover:bg-k-red flex items-center justify-center transition-colors">
+          <i data-lucide="chevron-right" class="w-5 h-5 text-white"></i>
+        </button>
+
+        <!-- Dots -->
+        <div id="modal-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2"></div>
+
+        <!-- Image counter -->
+        <div class="absolute top-4 left-4 font-mono text-xs text-white/70 bg-k-bg/60 px-2 py-1 rounded">
+          <span id="slide-counter">1 / 1</span>
+        </div>
+      </div>
+
+      <!-- Vehicle info -->
+      <div class="p-6 sm:p-8">
+        <h2 id="modal-title" class="font-condensed font-bold text-white text-3xl mb-5"></h2>
+
+        <table class="w-full text-sm mb-6">
+          <tbody id="modal-specs">
+          </tbody>
+        </table>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a id="modal-cta" href="mailto:info@garagekohlerag.ch?subject=Mietfahrzeug%20Reservation"
+             class="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-k-red hover:bg-k-redhot text-white font-medium rounded transition-colors duration-200 font-mono">
+            <i data-lucide="send" class="w-5 h-5"></i> Reservierung anfragen
+          </a>
+          <a href="tel:+41344604444"
+             class="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 border border-k-border hover:border-k-red rounded text-sm font-mono text-k-muted hover:text-white transition-colors">
+            <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="grain bg-k-elevated border-t border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg">K</div>
+            <div>
+              <div class="font-condensed font-bold text-white text-lg leading-none">GARAGE KOHLER AG</div>
+              <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+            </div>
+          </div>
+          <p class="text-k-muted text-sm leading-relaxed">Ihr zuverlässiger Garage-Partner im Emmental. Qualität, Ehrlichkeit und persönlicher Service.</p>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Navigation</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-sm text-k-muted hover:text-white transition-colors">Home</a></li>
+            <li><a href="services.html" class="text-sm text-k-muted hover:text-white transition-colors">Dienstleistungen</a></li>
+            <li><a href="fahrzeuge.html" class="text-sm text-k-muted hover:text-white transition-colors">Fahrzeuge</a></li>
+            <li><a href="team.html" class="text-sm text-k-muted hover:text-white transition-colors">Team</a></li>
+            <li><a href="oeffnungszeiten.html" class="text-sm text-k-muted hover:text-white transition-colors">Öffnungszeiten</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Kontakt</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Alpenstrasse 30A, 3432 Lützelflüh</span></li>
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Huttwilstrasse 33, 3463 Häusernmoos</span></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="phone" class="w-4 h-4 text-k-red"></i><a href="tel:+41344604444" class="font-mono text-k-muted hover:text-k-amber transition-colors">034 460 44 44</a></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="mail" class="w-4 h-4 text-k-red"></i><a href="mailto:info@garagekohlerag.ch" class="font-mono text-k-muted hover:text-k-amber transition-colors">info@garagekohlerag.ch</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-k-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-mono text-xs text-k-border">© 2024 Garage Kohler AG · Lützelflüh &amp; Häusernmoos</p>
+        <p class="font-mono text-xs text-k-border">AGVS | UPSA · le Garage Partner</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Nav
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconClose = document.getElementById('icon-close');
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+      iconMenu.classList.toggle('hidden', isOpen);
+      iconClose.classList.toggle('hidden', !isOpen);
+    });
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      if (el.dataset.nav === page) { el.classList.add('text-white'); el.classList.remove('text-k-muted'); }
+    });
+
+    // ===== MIETFAHRZEUGE DATA =====
+    const PH = (w, h, label) => `https://placehold.co/${w}x${h}/1c1c24/c0392b?text=${encodeURIComponent(label)}`;
+
+    const mietfahrzeuge = [
+      {
+        name: 'Fiat Ducato 2.3 Rimor',
+        images: [
+          'https://static.wixstatic.com/media/0e51e8_a347bd51fc4a4cbf86849bb6f2d194aa~mv2.jpg',
+          PH(800, 380, 'Rimor - Innenraum'),
+          PH(800, 380, 'Rimor - Schlafbereich'),
+        ],
+        specs: [
+          ['Typ', 'Wohnmobil'],
+          ['Basis', 'Fiat Ducato 2.3'],
+          ['Aufbau', 'Rimor'],
+          ['Sitze', '6'],
+          ['Schlafplätze', '4–6'],
+          ['Preis', 'CHF 1\'050 / Woche'],
+          ['Inkl. km', '2\'000 km'],
+          ['Mehrkilometer', 'CHF 0.30 / km'],
+        ],
+      },
+      {
+        name: 'Fiat Ducato 2.3 Elnagh',
+        images: [
+          'https://static.wixstatic.com/media/0e51e8_1a781e11cbc649a781ffd48732040759~mv2.jpg',
+          'https://static.wixstatic.com/media/0e51e8_c6bb6d279b7143a7a976a18c3e80092e~mv2.jpg',
+          PH(800, 380, 'Elnagh - Innenraum'),
+        ],
+        specs: [
+          ['Typ', 'Wohnmobil'],
+          ['Basis', 'Fiat Ducato 2.3'],
+          ['Aufbau', 'Elnagh'],
+          ['Sitze', '4'],
+          ['Schlafplätze', '4–6'],
+          ['Preis', 'CHF 1\'050 / Woche'],
+          ['Inkl. km', '2\'000 km'],
+          ['Mehrkilometer', 'CHF 0.30 / km'],
+        ],
+      },
+      {
+        name: 'Fiat Ducato Adria Sun Liring',
+        images: [
+          'https://static.wixstatic.com/media/0e51e8_cf33e5c86e5745df83e412a91120446d~mv2.jpeg',
+          PH(800, 380, 'Adria - Innenraum'),
+          PH(800, 380, 'Adria - Küchenbereich'),
+        ],
+        specs: [
+          ['Typ', 'Wohnmobil (kompakt)'],
+          ['Basis', 'Fiat Ducato'],
+          ['Aufbau', 'Adria Sun Liring'],
+          ['Sitze', '3'],
+          ['Schlafplätze', '2–3'],
+          ['Preis', 'CHF 950 / Woche'],
+          ['Inkl. km', '2\'000 km'],
+          ['Mehrkilometer', 'CHF 0.30 / km'],
+        ],
+      },
+      {
+        name: 'Fiat Ducato 17Q 2.3 Transporter',
+        images: [
+          'https://static.wixstatic.com/media/0e51e8_fccaf0da306f454b857a78f3551477ee~mv2.jpg',
+          PH(800, 380, 'Transporter - Laderaum'),
+          PH(800, 380, 'Transporter - Innenraum'),
+        ],
+        specs: [
+          ['Typ', 'Kastenfahrzeug / Transporter'],
+          ['Basis', 'Fiat Ducato 17Q 2.3'],
+          ['Sitze', '3'],
+          ['Laderaum', 'Grosser Kastenaufbau'],
+          ['Preis', 'CHF 110 / Tag'],
+          ['Inkl. km', 'Auf Anfrage'],
+          ['Eignung', 'Umzug, Transport, Handwerk'],
+        ],
+      },
+    ];
+
+    let currentVehicle = 0;
+    let currentSlide = 0;
+
+    function openModal(vehicleIndex) {
+      currentVehicle = vehicleIndex;
+      currentSlide = 0;
+      const v = mietfahrzeuge[vehicleIndex];
+
+      document.getElementById('modal-title').textContent = v.name;
+
+      // Specs table
+      const tbody = document.getElementById('modal-specs');
+      tbody.innerHTML = v.specs.map(([label, val], i) =>
+        `<tr class="${i % 2 === 0 ? 'bg-k-elevated' : ''}">
+          <td class="px-4 py-2.5 font-mono text-xs text-k-muted rounded-l">${label}</td>
+          <td class="px-4 py-2.5 font-mono text-xs text-k-text text-right rounded-r font-medium">${val}</td>
+        </tr>`
+      ).join('');
+
+      // CTA email subject
+      document.getElementById('modal-cta').href =
+        `mailto:info@garagekohlerag.ch?subject=Mietfahrzeug%20Anfrage%3A%20${encodeURIComponent(v.name)}`;
+
+      buildDots();
+      updateSlide();
+
+      document.getElementById('modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Focus modal
+      document.getElementById('modal-panel').focus();
+      lucide.createIcons();
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function buildDots() {
+      const v = mietfahrzeuge[currentVehicle];
+      const container = document.getElementById('modal-dots');
+      container.innerHTML = v.images.map((_, i) =>
+        `<button class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})" aria-label="Bild ${i+1}"></button>`
+      ).join('');
+    }
+
+    function updateSlide() {
+      const v = mietfahrzeuge[currentVehicle];
+      const img = document.getElementById('modal-img');
+      img.style.opacity = '0';
+      setTimeout(() => {
+        img.src = v.images[currentSlide];
+        img.onerror = () => { img.src = `https://placehold.co/800x380/1c1c24/c0392b?text=${encodeURIComponent(v.name)}`; };
+        img.style.opacity = '1';
+      }, 150);
+      document.getElementById('slide-counter').textContent = `${currentSlide + 1} / ${v.images.length}`;
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    }
+
+    function nextSlide() {
+      const v = mietfahrzeuge[currentVehicle];
+      currentSlide = (currentSlide + 1) % v.images.length;
+      updateSlide();
+    }
+
+    function prevSlide() {
+      const v = mietfahrzeuge[currentVehicle];
+      currentSlide = (currentSlide - 1 + v.images.length) % v.images.length;
+      updateSlide();
+    }
+
+    function goToSlide(i) {
+      currentSlide = i;
+      updateSlide();
+    }
+
+    // Backdrop close
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Escape key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowRight' && document.getElementById('modal').classList.contains('open')) nextSlide();
+      if (e.key === 'ArrowLeft'  && document.getElementById('modal').classList.contains('open')) prevSlide();
+    });
+  </script>
+</body>
+</html>

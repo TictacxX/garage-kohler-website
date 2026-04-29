@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garage Kohler AG — Dienstleistungen</title>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'k-bg':      '#0d0d10',
+            'k-surface': '#14141a',
+            'k-elevated':'#1c1c24',
+            'k-border':  '#2a2a35',
+            'k-red':     '#c0392b',
+            'k-redhot':  '#ff5a3d',
+            'k-amber':   '#f0a500',
+            'k-text':    '#d4d4d4',
+            'k-muted':   '#8a8a9a',
+          },
+          fontFamily: {
+            'condensed': ['Barlow Condensed', 'sans-serif'],
+            'body':      ['Inter', 'sans-serif'],
+            'mono':      ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body { background-color: #0d0d10; color: #d4d4d4; font-family: 'Inter', sans-serif; }
+    .grain { position: relative; overflow: hidden; }
+    .grain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .grain > * { position: relative; z-index: 2; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d10; }
+    ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c0392b; }
+    #nav-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    #nav-drawer.open { max-height: 24rem; }
+
+    .service-card {
+      transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(192,57,43,0.18), 0 2px 8px rgba(0,0,0,0.5);
+      border-color: #c0392b;
+    }
+    .service-card:hover .service-icon {
+      background-color: rgba(192,57,43,0.2);
+      color: #ff5a3d;
+    }
+    .service-icon {
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+  </style>
+</head>
+<body class="bg-k-bg text-k-text font-body antialiased">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-k-elevated/95 backdrop-blur-sm border-b border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg leading-none group-hover:bg-k-redhot transition-colors duration-200">K</div>
+          <div class="hidden sm:block">
+            <div class="font-condensed font-bold text-white text-lg tracking-tight leading-none">GARAGE KOHLER</div>
+            <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" data-nav="index.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Home</a>
+          <a href="services.html" data-nav="services.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Dienstleistungen</a>
+          <a href="fahrzeuge.html" data-nav="fahrzeuge.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Fahrzeuge</a>
+          <a href="team.html" data-nav="team.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Team</a>
+          <a href="oeffnungszeiten.html" data-nav="oeffnungszeiten.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Öffnungszeiten</a>
+          <a href="tel:+41344604444" class="ml-3 px-4 py-2 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors duration-150 flex items-center gap-2">
+            <i data-lucide="phone" class="w-4 h-4"></i><span class="font-mono">034 460 44 44</span>
+          </a>
+        </div>
+        <button id="hamburger" class="md:hidden p-2 text-k-muted hover:text-white transition-colors" aria-label="Menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6" id="icon-menu"></i>
+          <i data-lucide="x" class="w-6 h-6 hidden" id="icon-close"></i>
+        </button>
+      </div>
+    </div>
+    <div id="nav-drawer" class="md:hidden border-t border-k-border bg-k-elevated">
+      <div class="px-4 py-3 flex flex-col gap-1">
+        <a href="index.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Home</a>
+        <a href="services.html" class="px-3 py-2.5 text-sm font-medium text-white hover:text-k-red rounded transition-colors">Dienstleistungen</a>
+        <a href="fahrzeuge.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Fahrzeuge</a>
+        <a href="team.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Team</a>
+        <a href="oeffnungszeiten.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Öffnungszeiten</a>
+        <a href="tel:+41344604444" class="mt-2 px-3 py-2.5 bg-k-red text-white text-sm font-medium rounded flex items-center gap-2">
+          <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-16">
+
+    <!-- PAGE HERO -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-k-border"
+             style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 70%), linear-gradient(180deg, #0d0d10 0%, #0a0a0e 100%);">
+      <div class="max-w-7xl mx-auto">
+        <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Garage Kohler AG</div>
+        <h1 class="font-condensed font-extrabold text-white text-4xl sm:text-5xl lg:text-6xl mb-4">Unsere<br/>Dienstleistungen</h1>
+        <p class="text-k-muted max-w-xl">Vom Occasionsverkauf über Reparaturen bis hin zu Mietfahrzeugen — wir bieten alles rund ums Auto aus einer Hand.</p>
+      </div>
+    </section>
+
+    <!-- SERVICE TILES -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- 1: Occasionsverkauf -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="car" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Occasionsverkauf</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Wir bieten eine sorgfältig ausgewählte Auswahl an geprüften Gebrauchtwagen. Unsere Occasionen werden fachmännisch kontrolliert und aufbereitet — für Ihre Sicherheit und Zufriedenheit.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Fahrzeugprüfung vor Verkauf</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Persönliche Beratung</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Alle Marken und Modelle</li>
+            </ul>
+            <a href="fahrzeuge.html" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Occasionen ansehen <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 2: Finanzierung & Leasing -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="banknote" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Finanzierung &amp; Leasing</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Wir beraten Sie umfassend zu Finanzierungs- und Leasingmöglichkeiten. Finden Sie die passende Lösung für Ihr Budget — transparent, fair und ohne versteckte Kosten.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Individuelle Finanzierungspläne</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Günstige Leasingkonditionen</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Unabhängige Beratung</li>
+            </ul>
+            <a href="oeffnungszeiten.html" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Termin vereinbaren <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 3: Reparaturen & Service -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="wrench" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Reparaturen &amp; Service</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Unser erfahrenes Werkstattteam kümmert sich um alle Fahrzeugmarken. Von der Routine-Inspektion bis zur komplexen Reparatur — wir arbeiten sorgfältig und termingerecht.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Wartung & Inspektion</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Motor- & Getriebearbeiten</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Elektronikdiagnose</li>
+            </ul>
+            <a href="oeffnungszeiten.html" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Werkstatttermin buchen <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 4: Ersatzfahrzeuge -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="key-round" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Ersatzfahrzeuge</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Während Ihr Fahrzeug in der Werkstatt ist, bleiben Sie mobil. Auf Voranmeldung stellen wir Ihnen ein Ersatzfahrzeug zur Verfügung — unkompliziert und zuverlässig.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Auf Voranmeldung verfügbar</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Günstige Konditionen</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Immer mobil bleiben</li>
+            </ul>
+            <a href="mailto:info@garagekohlerag.ch" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Anfrage senden <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 5: Fahrzeugankauf -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="hand-coins" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Fahrzeugankauf</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Sie möchten Ihr Fahrzeug verkaufen? Wir kaufen Ihren Gebrauchtwagen direkt und fair — Barzahlung, schnelle Abwicklung, kein Stress.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Sofortige Barzahlung</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Faire Bewertung</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>Schnelle & unkomplizierte Abwicklung</li>
+            </ul>
+            <a href="mailto:info@garagekohlerag.ch?subject=Fahrzeugankauf" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Fahrzeug anbieten <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+          <!-- 6: Mietfahrzeuge -->
+          <div class="service-card p-7 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="service-icon w-12 h-12 rounded-lg bg-k-red/10 flex items-center justify-center mb-6">
+              <i data-lucide="tent" class="w-6 h-6 text-k-red"></i>
+            </div>
+            <h2 class="font-condensed font-bold text-white text-2xl mb-3">Mietfahrzeuge</h2>
+            <p class="text-k-muted text-sm leading-relaxed mb-6">
+              Wohnmobile und Transporter zu fairen Preisen mieten. Ob für Ferien, Umzüge oder Transporte — wir haben das richtige Fahrzeug für jeden Bedarf.
+            </p>
+            <ul class="space-y-2 text-sm text-k-muted mb-6">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>3 Wohnmobile (Fiat Ducato)</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>1 Transporter</li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-k-red flex-shrink-0"></i>2'000 km inklusive</li>
+            </ul>
+            <a href="fahrzeuge.html#mietfahrzeuge" class="flex items-center gap-1.5 text-k-red text-sm font-medium hover:gap-2.5 transition-all duration-150">
+              Verfügbarkeit prüfen <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grain rounded-2xl overflow-hidden"
+             style="background: linear-gradient(135deg, #c0392b 0%, #991f1f 50%, #7a1a1a 100%);">
+          <div class="px-8 sm:px-12 py-12 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+              <h2 class="font-condensed font-bold text-white text-3xl sm:text-4xl mb-2">Finanzierung &amp; Leasing</h2>
+              <p class="text-white/70 text-sm">Wir beraten Sie gerne — persönlich, unabhängig, fair.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+              <a href="tel:+41344604444"
+                 class="px-6 py-3 bg-white text-k-red font-medium rounded hover:bg-k-text transition-colors duration-200 font-mono text-sm flex items-center gap-2 justify-center">
+                <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+              </a>
+              <a href="mailto:info@garagekohlerag.ch"
+                 class="px-6 py-3 bg-transparent border border-white/50 hover:border-white text-white font-medium rounded transition-colors duration-200 text-sm flex items-center gap-2 justify-center">
+                <i data-lucide="mail" class="w-4 h-4"></i> E-Mail schreiben
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATIONS -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 border-t border-k-border">
+      <div class="max-w-7xl mx-auto text-center">
+        <p class="font-mono text-xs text-k-border uppercase tracking-widest mb-6">Zertifizierungen & Mitgliedschaften</p>
+        <div class="flex flex-wrap items-center justify-center gap-8">
+          <div class="flex items-center gap-2 px-5 py-2.5 rounded bg-k-surface border border-k-border">
+            <i data-lucide="shield-check" class="w-5 h-5 text-k-red"></i>
+            <span class="font-condensed font-semibold text-white text-lg">AGVS | UPSA</span>
+          </div>
+          <div class="flex items-center gap-2 px-5 py-2.5 rounded bg-k-surface border border-k-border">
+            <i data-lucide="award" class="w-5 h-5 text-k-amber"></i>
+            <span class="font-condensed font-semibold text-white text-lg">le Garage Partner</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="grain bg-k-elevated border-t border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg">K</div>
+            <div>
+              <div class="font-condensed font-bold text-white text-lg leading-none">GARAGE KOHLER AG</div>
+              <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+            </div>
+          </div>
+          <p class="text-k-muted text-sm leading-relaxed">Ihr zuverlässiger Garage-Partner im Emmental. Qualität, Ehrlichkeit und persönlicher Service.</p>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Navigation</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-sm text-k-muted hover:text-white transition-colors">Home</a></li>
+            <li><a href="services.html" class="text-sm text-k-muted hover:text-white transition-colors">Dienstleistungen</a></li>
+            <li><a href="fahrzeuge.html" class="text-sm text-k-muted hover:text-white transition-colors">Fahrzeuge</a></li>
+            <li><a href="team.html" class="text-sm text-k-muted hover:text-white transition-colors">Team</a></li>
+            <li><a href="oeffnungszeiten.html" class="text-sm text-k-muted hover:text-white transition-colors">Öffnungszeiten</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Kontakt</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Alpenstrasse 30A, 3432 Lützelflüh</span></li>
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Huttwilstrasse 33, 3463 Häusernmoos</span></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="phone" class="w-4 h-4 text-k-red"></i><a href="tel:+41344604444" class="font-mono text-k-muted hover:text-k-amber transition-colors">034 460 44 44</a></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="mail" class="w-4 h-4 text-k-red"></i><a href="mailto:info@garagekohlerag.ch" class="font-mono text-k-muted hover:text-k-amber transition-colors">info@garagekohlerag.ch</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-k-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-mono text-xs text-k-border">© 2024 Garage Kohler AG · Lützelflüh &amp; Häusernmoos</p>
+        <p class="font-mono text-xs text-k-border">AGVS | UPSA · le Garage Partner</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconClose = document.getElementById('icon-close');
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+      iconMenu.classList.toggle('hidden', isOpen);
+      iconClose.classList.toggle('hidden', !isOpen);
+    });
+
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      if (el.dataset.nav === page) { el.classList.add('text-white'); el.classList.remove('text-k-muted'); }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garage Kohler AG — Öffnungszeiten & Standorte</title>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'k-bg':      '#0d0d10',
+            'k-surface': '#14141a',
+            'k-elevated':'#1c1c24',
+            'k-border':  '#2a2a35',
+            'k-red':     '#c0392b',
+            'k-redhot':  '#ff5a3d',
+            'k-amber':   '#f0a500',
+            'k-text':    '#d4d4d4',
+            'k-muted':   '#8a8a9a',
+          },
+          fontFamily: {
+            'condensed': ['Barlow Condensed', 'sans-serif'],
+            'body':      ['Inter', 'sans-serif'],
+            'mono':      ['JetBrains Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <style>
+    body { background-color: #0d0d10; color: #d4d4d4; font-family: 'Inter', sans-serif; }
+    .grain { position: relative; overflow: hidden; }
+    .grain::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .grain > * { position: relative; z-index: 2; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d10; }
+    ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #c0392b; }
+    #nav-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    #nav-drawer.open { max-height: 24rem; }
+    .today-row { background-color: rgba(192,57,43,0.1); border-left: 2px solid #c0392b; }
+    .card-lift { transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s ease, border-color 0.2s ease; }
+    .card-lift:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(192,57,43,0.18), 0 2px 8px rgba(0,0,0,0.5); border-color: #c0392b; }
+  </style>
+</head>
+<body class="bg-k-bg text-k-text font-body antialiased">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-k-elevated/95 backdrop-blur-sm border-b border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg leading-none group-hover:bg-k-redhot transition-colors duration-200">K</div>
+          <div class="hidden sm:block">
+            <div class="font-condensed font-bold text-white text-lg tracking-tight leading-none">GARAGE KOHLER</div>
+            <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+          </div>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" data-nav="index.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Home</a>
+          <a href="services.html" data-nav="services.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Dienstleistungen</a>
+          <a href="fahrzeuge.html" data-nav="fahrzeuge.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Fahrzeuge</a>
+          <a href="team.html" data-nav="team.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Team</a>
+          <a href="oeffnungszeiten.html" data-nav="oeffnungszeiten.html" class="nav-link px-3 py-2 text-sm font-medium text-k-muted hover:text-white rounded transition-colors duration-150">Öffnungszeiten</a>
+          <a href="tel:+41344604444" class="ml-3 px-4 py-2 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors duration-150 flex items-center gap-2">
+            <i data-lucide="phone" class="w-4 h-4"></i><span class="font-mono">034 460 44 44</span>
+          </a>
+        </div>
+        <button id="hamburger" class="md:hidden p-2 text-k-muted hover:text-white transition-colors" aria-label="Menu" aria-expanded="false">
+          <i data-lucide="menu" class="w-6 h-6" id="icon-menu"></i>
+          <i data-lucide="x" class="w-6 h-6 hidden" id="icon-close"></i>
+        </button>
+      </div>
+    </div>
+    <div id="nav-drawer" class="md:hidden border-t border-k-border bg-k-elevated">
+      <div class="px-4 py-3 flex flex-col gap-1">
+        <a href="index.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Home</a>
+        <a href="services.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Dienstleistungen</a>
+        <a href="fahrzeuge.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Fahrzeuge</a>
+        <a href="team.html" class="px-3 py-2.5 text-sm font-medium text-k-muted hover:text-white rounded transition-colors">Team</a>
+        <a href="oeffnungszeiten.html" class="px-3 py-2.5 text-sm font-medium text-white hover:text-k-red rounded transition-colors">Öffnungszeiten</a>
+        <a href="tel:+41344604444" class="mt-2 px-3 py-2.5 bg-k-red text-white text-sm font-medium rounded flex items-center gap-2">
+          <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-16">
+
+    <!-- PAGE HERO -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 border-b border-k-border"
+             style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 70%), linear-gradient(180deg, #0d0d10 0%, #0a0a0e 100%);">
+      <div class="max-w-7xl mx-auto">
+        <div class="font-mono text-xs text-k-red uppercase tracking-widest mb-3">Garage Kohler AG</div>
+        <h1 class="font-condensed font-extrabold text-white text-5xl sm:text-6xl mb-4">Öffnungszeiten<br/>&amp; Standorte</h1>
+        <p class="text-k-muted max-w-xl">Besuchen Sie uns an einem unserer zwei Standorte im Emmental — wir freuen uns auf Sie.</p>
+
+        <!-- Real-time status badge -->
+        <div class="mt-8">
+          <div id="status-badge" class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-k-surface border border-k-border">
+            <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-k-muted"></span>
+            <span id="status-text" class="font-mono text-sm text-k-muted">Prüfe Status…</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPENING HOURS TABLE -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <!-- Lützelflüh -->
+          <div class="rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="p-6 border-b border-k-border">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded bg-k-red/10 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="building-2" class="w-5 h-5 text-k-red"></i>
+                </div>
+                <div>
+                  <h2 class="font-condensed font-bold text-white text-2xl">Lützelflüh</h2>
+                  <p class="font-mono text-sm text-k-muted">Alpenstrasse 30A, 3432 Lützelflüh</p>
+                  <a href="tel:+41344604444" class="flex items-center gap-2 text-k-amber font-mono text-base mt-2 hover:text-white transition-colors">
+                    <i data-lucide="phone" class="w-4 h-4"></i> 034 460 44 44
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <table class="w-full text-sm">
+              <tbody id="hours-table-1">
+                <tr class="border-b border-k-border" data-day="1,2,3,4">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Montag – Donnerstag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">7:30–12:00</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">13:15–17:30</td>
+                </tr>
+                <tr class="border-b border-k-border" data-day="5">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Freitag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">7:30–12:00</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">13:15–17:00</td>
+                </tr>
+                <tr data-day="6,0">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Samstag – Sonntag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-border text-right" colspan="2">Geschlossen</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="p-5 border-t border-k-border flex gap-3">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Alpenstrasse+30A,+3432+Lützelflüh,+Switzerland"
+                 target="_blank" rel="noopener"
+                 class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-k-border hover:border-k-red text-sm text-k-muted hover:text-white transition-colors font-mono">
+                <i data-lucide="navigation" class="w-4 h-4"></i> Route
+              </a>
+              <a href="https://www.google.com/maps/search/Alpenstrasse+30A,+3432+Lützelflüh"
+                 target="_blank" rel="noopener"
+                 class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-k-border hover:border-k-red text-sm text-k-muted hover:text-white transition-colors font-mono">
+                <i data-lucide="map" class="w-4 h-4"></i> Google Maps
+              </a>
+            </div>
+          </div>
+
+          <!-- Häusernmoos -->
+          <div class="rounded-xl bg-k-surface border border-k-border overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+            <div class="p-6 border-b border-k-border">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded bg-k-red/10 flex items-center justify-center flex-shrink-0">
+                  <i data-lucide="building-2" class="w-5 h-5 text-k-red"></i>
+                </div>
+                <div>
+                  <h2 class="font-condensed font-bold text-white text-2xl">Häusernmoos</h2>
+                  <p class="font-mono text-sm text-k-muted">Huttwilstrasse 33, 3463 Häusernmoos</p>
+                  <a href="tel:+41344351274" class="flex items-center gap-2 text-k-amber font-mono text-base mt-2 hover:text-white transition-colors">
+                    <i data-lucide="phone" class="w-4 h-4"></i> 034 435 12 74
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <table class="w-full text-sm">
+              <tbody id="hours-table-2">
+                <tr class="border-b border-k-border" data-day="1,2,3,4">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Montag – Donnerstag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">7:30–12:00</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">13:15–17:30</td>
+                </tr>
+                <tr class="border-b border-k-border" data-day="5">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Freitag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">7:30–12:00</td>
+                  <td class="px-6 py-3.5 font-mono text-k-text text-right">13:15–17:00</td>
+                </tr>
+                <tr data-day="6,0">
+                  <td class="px-6 py-3.5 font-mono text-k-muted">Samstag – Sonntag</td>
+                  <td class="px-6 py-3.5 font-mono text-k-border text-right" colspan="2">Geschlossen</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="p-5 border-t border-k-border flex gap-3">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Huttwilstrasse+33,+3463+Häusernmoos,+Switzerland"
+                 target="_blank" rel="noopener"
+                 class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-k-border hover:border-k-red text-sm text-k-muted hover:text-white transition-colors font-mono">
+                <i data-lucide="navigation" class="w-4 h-4"></i> Route
+              </a>
+              <a href="https://www.google.com/maps/search/Huttwilstrasse+33,+3463+Häusernmoos"
+                 target="_blank" rel="noopener"
+                 class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded border border-k-border hover:border-k-red text-sm text-k-muted hover:text-white transition-colors font-mono">
+                <i data-lucide="map" class="w-4 h-4"></i> Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP PLACEHOLDER SECTION -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="rounded-xl overflow-hidden border border-k-border h-52 bg-k-elevated flex items-center justify-center relative">
+            <img src="https://placehold.co/700x210/1c1c24/2a2a35?text=Karte+Lützelflüh" alt="Karte Lützelflüh" class="w-full h-full object-cover opacity-40" />
+            <div class="absolute inset-0 flex items-center justify-center">
+              <a href="https://www.google.com/maps/search/Alpenstrasse+30A,+3432+Lützelflüh" target="_blank" rel="noopener"
+                 class="flex items-center gap-2 px-5 py-2.5 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors shadow-lg">
+                <i data-lucide="external-link" class="w-4 h-4"></i> Lützelflüh auf Karte öffnen
+              </a>
+            </div>
+          </div>
+          <div class="rounded-xl overflow-hidden border border-k-border h-52 bg-k-elevated flex items-center justify-center relative">
+            <img src="https://placehold.co/700x210/1c1c24/2a2a35?text=Karte+Häusernmoos" alt="Karte Häusernmoos" class="w-full h-full object-cover opacity-40" />
+            <div class="absolute inset-0 flex items-center justify-center">
+              <a href="https://www.google.com/maps/search/Huttwilstrasse+33,+3463+Häusernmoos" target="_blank" rel="noopener"
+                 class="flex items-center gap-2 px-5 py-2.5 bg-k-red hover:bg-k-redhot text-white text-sm font-medium rounded transition-colors shadow-lg">
+                <i data-lucide="external-link" class="w-4 h-4"></i> Häusernmoos auf Karte öffnen
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT CARD -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-xl mx-auto text-center">
+        <div class="p-8 rounded-xl bg-k-surface border border-k-border shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
+          <div class="w-12 h-12 rounded bg-k-red/10 flex items-center justify-center mx-auto mb-5">
+            <i data-lucide="mail" class="w-6 h-6 text-k-red"></i>
+          </div>
+          <h2 class="font-condensed font-bold text-white text-3xl mb-2">Kontakt aufnehmen</h2>
+          <p class="text-k-muted text-sm mb-6">Fragen zu Fahrzeugen, Reparaturen oder Mietfahrzeugen? Wir antworten schnell.</p>
+          <a href="mailto:info@garagekohlerag.ch"
+             class="block w-full py-3 bg-k-red hover:bg-k-redhot text-white font-medium rounded transition-colors duration-200 font-mono mb-3 shadow-[0_0_16px_rgba(192,57,43,0.25)]">
+            info@garagekohlerag.ch
+          </a>
+          <div class="grid grid-cols-2 gap-3">
+            <a href="tel:+41344604444" class="py-2.5 border border-k-border hover:border-k-red rounded text-sm font-mono text-k-muted hover:text-white transition-colors">
+              034 460 44 44
+            </a>
+            <a href="tel:+41344351274" class="py-2.5 border border-k-border hover:border-k-red rounded text-sm font-mono text-k-muted hover:text-white transition-colors">
+              034 435 12 74
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="grain bg-k-elevated border-t border-k-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-9 h-9 bg-k-red flex items-center justify-center rounded font-condensed font-bold text-white text-lg">K</div>
+            <div>
+              <div class="font-condensed font-bold text-white text-lg leading-none">GARAGE KOHLER AG</div>
+              <div class="font-mono text-[10px] text-k-muted leading-none mt-0.5">le Garage Partner</div>
+            </div>
+          </div>
+          <p class="text-k-muted text-sm leading-relaxed">Ihr zuverlässiger Garage-Partner im Emmental. Qualität, Ehrlichkeit und persönlicher Service.</p>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Navigation</h4>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-sm text-k-muted hover:text-white transition-colors">Home</a></li>
+            <li><a href="services.html" class="text-sm text-k-muted hover:text-white transition-colors">Dienstleistungen</a></li>
+            <li><a href="fahrzeuge.html" class="text-sm text-k-muted hover:text-white transition-colors">Fahrzeuge</a></li>
+            <li><a href="team.html" class="text-sm text-k-muted hover:text-white transition-colors">Team</a></li>
+            <li><a href="oeffnungszeiten.html" class="text-sm text-k-muted hover:text-white transition-colors">Öffnungszeiten</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-condensed font-semibold text-white text-sm uppercase tracking-widest mb-4">Kontakt</h4>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Alpenstrasse 30A, 3432 Lützelflüh</span></li>
+            <li class="flex items-start gap-2 text-sm text-k-muted"><i data-lucide="map-pin" class="w-4 h-4 text-k-red flex-shrink-0 mt-0.5"></i><span class="font-mono">Huttwilstrasse 33, 3463 Häusernmoos</span></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="phone" class="w-4 h-4 text-k-red"></i><a href="tel:+41344604444" class="font-mono text-k-muted hover:text-k-amber transition-colors">034 460 44 44</a></li>
+            <li class="flex items-center gap-2 text-sm"><i data-lucide="mail" class="w-4 h-4 text-k-red"></i><a href="mailto:info@garagekohlerag.ch" class="font-mono text-k-muted hover:text-k-amber transition-colors">info@garagekohlerag.ch</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="border-t border-k-border">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-mono text-xs text-k-border">© 2024 Garage Kohler AG · Lützelflüh &amp; Häusernmoos</p>
+        <p class="font-mono text-xs text-k-border">AGVS | UPSA · le Garage Partner</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Mobile nav
+    const hamburger = document.getElementById('hamburger');
+    const drawer = document.getElementById('nav-drawer');
+    const iconMenu = document.getElementById('icon-menu');
+    const iconClose = document.getElementById('icon-close');
+    hamburger.addEventListener('click', () => {
+      const isOpen = drawer.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', isOpen);
+      iconMenu.classList.toggle('hidden', isOpen);
+      iconClose.classList.toggle('hidden', !isOpen);
+    });
+
+    // Active nav
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      if (el.dataset.nav === page) { el.classList.add('text-white'); el.classList.remove('text-k-muted'); }
+    });
+
+    // Open/Closed status
+    function getOpenStatus() {
+      const now = new Date();
+      const day = now.getDay(); // 0=Sun,1=Mon..5=Fri,6=Sat
+      const h = now.getHours(), m = now.getMinutes();
+      const mins = h * 60 + m;
+      if (day === 0 || day === 6) return { open: false, next: 'Montag 07:30 Uhr' };
+      const morningOpen = 7 * 60 + 30, morningClose = 12 * 60;
+      const aftyOpen = 13 * 60 + 15;
+      const aftyClose = day === 5 ? 17 * 60 : 17 * 60 + 30;
+      const isOpen = (mins >= morningOpen && mins < morningClose) || (mins >= aftyOpen && mins < aftyClose);
+      let next = '';
+      if (!isOpen) {
+        if (mins < morningOpen) next = 'heute um 07:30 Uhr';
+        else if (mins >= morningClose && mins < aftyOpen) next = 'heute um 13:15 Uhr';
+        else next = day === 5 ? 'Montag 07:30 Uhr' : 'morgen 07:30 Uhr';
+      }
+      return { open: isOpen, next };
+    }
+
+    const status = getOpenStatus();
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+    if (status.open) {
+      dot.classList.remove('bg-k-muted');
+      dot.classList.add('bg-green-500', 'animate-pulse');
+      text.textContent = 'Jetzt geöffnet';
+      text.classList.add('text-green-400');
+      text.classList.remove('text-k-muted');
+    } else {
+      dot.classList.remove('bg-k-muted');
+      dot.classList.add('bg-k-red');
+      text.textContent = status.next ? `Geschlossen · Öffnet ${status.next}` : 'Geschlossen';
+      text.classList.add('text-k-red');
+      text.classList.remove('text-k-muted');
+    }
+
+    // Highlight today's row
+    const today = new Date().getDay();
+    document.querySelectorAll('[data-day]').forEach(row => {
+      const days = row.dataset.day.split(',').map(Number);
+      if (days.includes(today)) row.classList.add('today-row');
+    });
+  </script>
+</body>
+</html>
